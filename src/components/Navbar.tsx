@@ -7,10 +7,12 @@ import Link from "next/link";
 
 const Navbar = () => {
   return (
-    <nav className="container mx-auto py-4 px-4 md:px-6 sticky top-0 bg-white z-50 shadow-sm">
+    <nav className="container mx-auto py-4 px-4 md:px-6 sticky top-0 bg-white z-50 shadow-lg">
       <div className="flex justify-between items-center">
         {/* Logo */}
-        <Image src="/logo.png" width={50} height={50} alt="logo" />
+        <Link href="/">
+          <Image src="/logo.png" width={50} height={50} alt="logo" />
+        </Link>
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex gap-8 items-center font-medium text-sm">

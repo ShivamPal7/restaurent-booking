@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { ChevronLeft, ChevronRight, CalendarDays, MapPin, ClipboardList, CheckCircle } from 'lucide-react'
 import {
   Card,
@@ -22,7 +23,7 @@ import type { BookingFormData } from '@/types/booking'
 export default function BookingSystem() {
   const [step, setStep] = useState(1)
   const [selectedDate, setSelectedDate] = useState<Date>()
-  const [selectedTime, setSelectedTime] = useState<string>()
+  const [selectedTime, setSelectedTime] = useState<string>('')
   const [selectedTable, setSelectedTable] = useState<string>()
   const [formData, setFormData] = useState<BookingFormData>({
     name: '',
@@ -63,6 +64,67 @@ export default function BookingSystem() {
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 4))
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1))
 
+  const handleBookingSubmit = async () => {
+    try {
+      if (!selectedDate || !selectedTime || !selectedTable || !formData) {
+        toast.error('Please fill in all required fields')
+        return
+      }
+
+      const bookingData = {
+        selectedDate: selectedDate.toISOString(),
+        selectedTime,
+        selectedTable,
+        formData: {
+          ...formData,
+          guests: formData.guests.toString()
+        }
+      }
+
+      // Show loading toast
+      const loadingToast = toast.loading('Creating your booking...')
+
+      const response = await fetch('/api/booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      })
+
+      const data = await response.json()
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast)
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || data.details || 'Failed to create booking')
+      }
+
+      // Show success toast
+      toast.success('Booking created successfully!', {
+        description: `Table ${selectedTable.split('-')[1]} booked for ${selectedDate.toLocaleDateString()} at ${selectedTime}`,
+      })
+
+      // Reset form
+      setStep(1)
+      setSelectedDate(undefined)
+      setSelectedTime('')
+      setSelectedTable(undefined)
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        guests: '',
+        specialRequests: '',
+      })
+
+    } catch (error) {
+      console.error('Error creating booking:', error)
+      toast.error(error instanceof Error ? error.message : 'An error occurred while booking')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-muted/30 p-4 md:p-8">
       <Card className="mx-auto max-w-6xl">
@@ -77,8 +139,6 @@ export default function BookingSystem() {
             <CalendarView
               selectedDate={selectedDate}
               onDateSelect={handleDateSelect}
-              bookedDates={bookedDates}
-              existingBookings={existingBookings}
               selectedTime={selectedTime}
               onTimeChange={handleTimeChange}
             />
@@ -87,7 +147,7 @@ export default function BookingSystem() {
           {step === 2 && (
             <TableSelection
               selectedTable={selectedTable}
-              bookedTables={bookedTables}
+              selectedDate={selectedDate}
               onTableSelect={handleTableSelect}
             />
           )}
@@ -114,12 +174,11 @@ export default function BookingSystem() {
             Previous
           </Button>
           <Button
-            onClick={nextStep}
+            onClick={step === 4 ? handleBookingSubmit : nextStep}
             disabled={
-              (step === 1 && !selectedDate) ||
+              (step === 1 && (!selectedDate || !selectedTime)) ||
               (step === 2 && !selectedTable) ||
-              (step === 3 && (!formData.name || !formData.email || !formData.phone || !formData.guests)) ||
-              step === 4
+              (step === 3 && (!formData.name || !formData.email || !formData.phone || !formData.guests))
             }
           >
             {step === 4 ? (

@@ -1,13 +1,63 @@
+import { useState, useEffect } from 'react'
 import { Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { format } from 'date-fns'
+import type { Booking } from '@/types/booking'
 
 interface TableSelectionProps {
   selectedTable?: string
-  bookedTables: string[]
+  selectedDate?: Date
   onTableSelect: (tableId: string) => void
 }
 
-export function TableSelection({ selectedTable, bookedTables, onTableSelect }: TableSelectionProps) {
+export function TableSelection({ selectedTable, selectedDate, onTableSelect }: TableSelectionProps) {
+  const [bookedTables, setBookedTables] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchBookedTables = async () => {
+      if (!selectedDate) return
+
+      try {
+        const response = await fetch('/api/booking')
+        const data = await response.json()
+
+        if (data.success) {
+          // Filter bookings for selected date and extract table numbers
+          const tablesForDate = data.bookings
+            .filter((booking: Booking) => 
+              format(new Date(booking.date), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+            )
+            .map((booking: Booking) => `table-${booking.tableNumber}`)
+
+          setBookedTables(tablesForDate)
+        }
+      } catch (error) {
+        console.error('Error fetching booked tables:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBookedTables()
+  }, [selectedDate])
+
+  if (!selectedDate) {
+    return (
+      <div className="text-center text-muted-foreground">
+        Please select a date first
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="text-center text-muted-foreground">
+        Loading available tables...
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-4 md:grid-cols-5">

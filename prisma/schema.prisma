@@ -13,13 +13,15 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model booking{
-  id String @id @default(cuid())
-  date DateTime
-  time DateTime
-  table Int
-  name String
-  phone Int
-  email String
-  req String
+model Booking {
+  id              String   @id @default(cuid())
+  date            DateTime
+  time            String
+  tableNumber     String
+  name            String
+  email           String
+  phone           String
+  guests          String
+  specialRequests String?
+  createdAt       DateTime @default(now())
 }

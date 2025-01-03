@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
 import { Badge } from '@/components/ui/badge'
@@ -8,22 +8,50 @@ import type { Booking } from '@/types/booking'
 interface CalendarViewProps {
   selectedDate?: Date
   onDateSelect: (date: Date | undefined) => void
-  bookedDates: string[]
-  existingBookings: Booking[]
-  selectedTime?: string
+  selectedTime: string
   onTimeChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export function CalendarView({
   selectedDate,
   onDateSelect,
-  bookedDates,
-  existingBookings,
   selectedTime,
   onTimeChange,
 }: CalendarViewProps) {
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [bookedDates, setBookedDates] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  console.log(selectedTime)
+  // Fetch bookings
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await fetch('/api/booking')
+        const data = await response.json()
+        
+        if (data.success) {
+          // Convert date strings to Date objects
+          const formattedBookings = data.bookings.map((booking: any) => ({
+            ...booking,
+            date: new Date(booking.date)
+          }))
+          setBookings(formattedBookings)
+          
+          // Get unique booked dates
+          const dates = Array.from(new Set(formattedBookings.map((booking: Booking) => 
+            format(new Date(booking.date), 'yyyy-MM-dd')
+          ))) as string[]
+          setBookedDates(dates)
+        }
+      } catch (error) {
+        console.error('Error fetching bookings:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBookings()
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -44,9 +72,10 @@ export function CalendarView({
               modifiersStyles={{
                 booked: {
                   backgroundColor: 'rgb(239 68 68 / 0.1)',
-                  color: 'rgb(239 68 68)',
+                  color: 'rgba(33, 33, 33, 1)',
                 },
               }}
+              disabled={(date) => date < new Date()}
             />
           </div>
 
@@ -73,15 +102,15 @@ export function CalendarView({
 
         {/* Booking List Block */}
         <div className="rounded-lg border p-4 w-full">
-          {existingBookings.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center text-gray-500">
+              <p>Loading bookings...</p>
+            </div>
+          ) : (
             <BookingList
-              bookings={existingBookings}
+              bookings={bookings}
               selectedDate={selectedDate}
             />
-          ) : (
-            <div className="text-center text-gray-500">
-              <p>No bookings available</p>
-            </div>
           )}
         </div>
       </div>

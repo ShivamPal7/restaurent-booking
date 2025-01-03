@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import Navbar from "./Navbar";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -12,7 +13,6 @@ const Hero = () => {
         height={600}
         alt="hero_bg"
       />
-      <Navbar />
       <div className="container h-[calc(100vh-120px)] grid items-center">
         <div className="space-y-4 bg-[#ffffff98] w-fit p-4">
           <p className="uppercase font-medium">Wide options of choice</p>
@@ -23,10 +23,10 @@ const Hero = () => {
             Delicious food color, aroma and taste.
             <br /> What are you waiting for?
           </p>
-
-          <button className="bg-accent text-white px-6 py-2 rounded-3xl text-[14px] sm:text-[16px]">
-            Book a Table
-          </button>
+          <Link href="/booking">
+            <button className="bg-accent text-white px-6 py-2 rounded-3xl text-[14px] sm:text-[16px] mt-4">
+              Book a Table
+            </button></Link>
         </div>
       </div>
     </div>
