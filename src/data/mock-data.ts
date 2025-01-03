@@ -1,5 +1,5 @@
 export const bookedDates = ['2025-01-15', '2025-01-20']
-export const bookedTables = ['table-2', 'table-5']
+export const bookedTables = ['table-2', 'table-5', 'table-8']
 
 export const existingBookings = [
   {
@@ -22,7 +22,7 @@ export const existingBookings = [
     id: '3',
     date: new Date(2025, 0, 20),
     time: '19:00',
-    table: 2,
+    table: 8,
     guests: 6,
     name: 'Michael Brown',
   },

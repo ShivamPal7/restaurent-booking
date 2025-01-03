@@ -1,14 +1,18 @@
-import { CalendarDays, MapPin, Users } from 'lucide-react'
+import { CalendarDays, Clock, MapPin, Users } from 'lucide-react'
 import { format } from 'date-fns'
-import type { BookingFormData } from '../types/booking'
+import type { BookingFormData } from '@/types/booking'
 
 interface BookingSummaryProps {
   selectedDate?: Date
   selectedTable?: string
   formData: BookingFormData
+  selectedTime?: string
 }
 
-export function BookingSummary({ selectedDate, selectedTable, formData }: BookingSummaryProps) {
+export function BookingSummary({ selectedDate, selectedTable, formData, selectedTime }: BookingSummaryProps) {
+
+  console.log(formData)
+
   return (
     <div className="space-y-6">
       <div className="rounded-lg border p-4">
@@ -18,6 +22,10 @@ export function BookingSummary({ selectedDate, selectedTable, formData }: Bookin
             <div className="flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-muted-foreground" />
               <span>Date: {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : ''}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span>Time: {selectedTime}</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />

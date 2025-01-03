@@ -10,8 +10,8 @@ interface TableSelectionProps {
 export function TableSelection({ selectedTable, bookedTables, onTableSelect }: TableSelectionProps) {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-        {Array.from({ length: 6 }, (_, i) => {
+      <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
+        {Array.from({ length: 10 }, (_, i) => {
           const tableId = `table-${i + 1}`
           const isBooked = bookedTables.includes(tableId)
           const isSelected = selectedTable === tableId

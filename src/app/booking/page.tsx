@@ -22,6 +22,7 @@ import type { BookingFormData } from '@/types/booking'
 export default function BookingSystem() {
   const [step, setStep] = useState(1)
   const [selectedDate, setSelectedDate] = useState<Date>()
+  const [selectedTime, setSelectedTime] = useState<string>()
   const [selectedTable, setSelectedTable] = useState<string>()
   const [formData, setFormData] = useState<BookingFormData>({
     name: '',
@@ -40,6 +41,10 @@ export default function BookingSystem() {
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date)
+  }
+
+  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedTime(event.target.value)
   }
 
   const handleTableSelect = (tableId: string) => {
@@ -74,6 +79,8 @@ export default function BookingSystem() {
               onDateSelect={handleDateSelect}
               bookedDates={bookedDates}
               existingBookings={existingBookings}
+              selectedTime={selectedTime}
+              onTimeChange={handleTimeChange}
             />
           )}
 
@@ -94,6 +101,7 @@ export default function BookingSystem() {
 
           {step === 4 && (
             <BookingSummary
+              selectedTime={selectedTime}
               selectedDate={selectedDate}
               selectedTable={selectedTable}
               formData={formData}
