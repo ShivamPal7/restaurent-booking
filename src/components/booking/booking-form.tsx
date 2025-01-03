@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import type { BookingFormData } from '../types/booking'
+import type { BookingFormData } from '@/types/booking'
 
 interface BookingFormProps {
   formData: BookingFormData
