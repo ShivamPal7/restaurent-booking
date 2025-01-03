@@ -54,7 +54,7 @@ export function CalendarView({
   }, [])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6">   
       <div className="flex gap-6 md:flex-row flex-col">
         {/* Date and Time Block */}
         <div className="rounded-lg border p-4 flex flex-col md:flex-col sm:flex-row gap-2">
